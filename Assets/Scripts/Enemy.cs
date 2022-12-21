@@ -67,9 +67,63 @@ public class Enemy : MonoBehaviour
             GoToHome();
         }
         TryChasePlayer();     
+    } 
+    private void FaceHome()
+    {
+        Vector3 direction = (enemyGoalPosition - enemy.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * turnSmoothing);
+    }
+    private void GoToHome()
+    {
+        FaceHome();
+        distanceFromHome = Vector3.Distance(enemy.position, enemyGoalPosition);
+
+        if (distanceFromHome >= attackHomeRadius)
+        {
+            inAttackHomeRange = false;
+            ignorePlayer = false;
+            MoveTowardsHome();
+        }
+        else
+        {
+            inAttackHomeRange = true;
+            ignorePlayer = true;
+            AttemptAttackHome();
+        }
+    }
+    private void MoveTowardsHome()
+    {
+        distanceFromHome = Vector3.Distance(enemy.position, enemyGoalPosition);
+        transform.position = Vector3.MoveTowards(enemy.position, enemyGoalPosition, enemySpeed * Time.deltaTime);
+    }
+    private void AttemptAttackHome()
+    {
+        if (inAttackHomeRange && canAttackHome)
+        {
+            StartCoroutine(StartAttackHome());
+        }
+    }
+    IEnumerator StartAttackHome()
+    {
+        AttackHome(enemyDamage);
+        canAttackHome = false;
+        yield return new WaitForSeconds(attackSpeed);
+        canAttackHome = true;
+    }
+    private void AttackHome(float damage)
+    {
+            Debug.Log("test hit home");
     }
 
-    private void TryChasePlayer()
+
+    private void FacePlayer()
+    {
+        Vector3 direction = (playerPosition - enemy.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * turnSmoothing);
+    }
+    private void TryChasePlayer() //really gross code bruh
     {
         playerPosition = player.gameObject.transform.position;
         distanceFromPlayer = Vector3.Distance(enemy.position, playerPosition);
@@ -97,40 +151,6 @@ public class Enemy : MonoBehaviour
             inAttackPlayersRange = false;
         }
     }
-
-    private void GoToHome()
-    {
-        FaceHome();
-        distanceFromHome = Vector3.Distance(enemy.position, enemyGoalPosition);
-
-        if (distanceFromHome >= attackHomeRadius)
-        {
-            inAttackHomeRange = false;
-            ignorePlayer = false;
-            MoveTowardsHome();
-        }
-        else
-        {
-            inAttackHomeRange = true;
-            ignorePlayer = true;
-            AttemptAttackHome();
-        }
-    }
-
-    private void MoveTowardsHome()
-    {
-        distanceFromHome = Vector3.Distance(enemy.position, enemyGoalPosition);
-        transform.position = Vector3.MoveTowards(enemy.position, enemyGoalPosition, enemySpeed * Time.deltaTime);
-    }
-
-    private void AttemptAttackHome()
-    {
-        if (inAttackHomeRange && canAttackHome)
-        {
-            StartCoroutine(StartAttackHome());
-        }
-    }
-
     private void AttemptAttackPlayer()
     {
         if (inAttackPlayersRange && canAttackPlayers)
@@ -138,14 +158,6 @@ public class Enemy : MonoBehaviour
             StartCoroutine(StartAttackPlayer());
         }
     }
-    IEnumerator StartAttackHome()
-    {
-        AttackHome(enemyDamage);
-        canAttackHome = false;
-        yield return new WaitForSeconds(attackSpeed);
-        canAttackHome = true;
-    }
-
     IEnumerator StartAttackPlayer()
     {
         AttackPlayer(enemyDamage);
@@ -153,29 +165,9 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(attackSpeed);
         canAttackPlayers = true;
     }
-
-    private void AttackHome(float damage)
-    {
-            Debug.Log("test hit home");
-    }
-
     private void AttackPlayer(float damage)
     {
         Debug.Log("test hit player");
-    }
-
-    private void FacePlayer()
-    {
-        Vector3 direction = (playerPosition - enemy.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * turnSmoothing);
-    }
-
-   private void FaceHome()
-    {
-        Vector3 direction = (enemyGoalPosition - enemy.position).normalized;
-        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * turnSmoothing);
     }
 
     private void OnDrawGizmos() 
@@ -185,7 +177,6 @@ public class Enemy : MonoBehaviour
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, chasePlayersRadius);
-
     }
 }
 
