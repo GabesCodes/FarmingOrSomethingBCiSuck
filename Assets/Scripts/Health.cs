@@ -8,17 +8,29 @@ public class Health : MonoBehaviour
     [SerializeField]
     public float health;
 
-    private float max_health = 10;
+    public GameObject HitTextPrefab;
 
     // Start is called before the first frame update
     void Start()
+    {      
+
+        if (this.gameObject.CompareTag("Player"))
+        {
+            this.health = GetComponent<PlayerScript>().playerHP;
+        }
+
+        if (this.gameObject.GetComponent<Enemy>())
+        {
+            this.health = GetComponent<Enemy>().enemyHP;
+        }
+    }
+    public void SetEnemyHealth(float enemyHealth)
     {
         
     }
 
     public void SetHealth(float maxHealth, float health)
     {
-        this.max_health = maxHealth;
         this.health = health;
     }
 
@@ -26,10 +38,21 @@ public class Health : MonoBehaviour
     {
         this.health -= damage;
 
+        if (HitTextPrefab != null && health > 0)
+        {
+            ShowHitText();
+        }
+
         if(health <= 0)
         {
             Die();
         }
+    }
+
+    void ShowHitText()
+    {
+        var go = Instantiate(HitTextPrefab, transform.position, Quaternion.identity, transform);
+        go.GetComponent<TextMesh>().text = health.ToString();
     }
 
     private void Die()

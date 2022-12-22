@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using TMPro;
 
 
 public class PlayerScript : MonoBehaviour
@@ -24,6 +25,10 @@ public class PlayerScript : MonoBehaviour
     public bool isSprinting;
     public bool isPlayerAlive;
 
+    public float playerHP;
+
+    public TextMeshProUGUI playerHealthText;
+    public TextMeshProUGUI playerHungerText;
 
     public GameObject player;
     Vector3 lastPos;
@@ -33,6 +38,7 @@ public class PlayerScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerHP = 100f;
         player = this.gameObject;
         ch = gameObject.GetComponent<CharacterController>();
         isPlayerAlive = true;
@@ -45,7 +51,9 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        playerHungerText.text = "Hunger: " + GetComponent<Hunger>().hungerStat.ToString();
+        playerHealthText.text = "Health: " + GetComponent<Health>().health.ToString(); 
+ 
         if (player.transform.position != lastPos)
         {
             isMoving = true;

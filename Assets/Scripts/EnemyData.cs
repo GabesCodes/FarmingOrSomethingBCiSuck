@@ -12,7 +12,8 @@ public class EnemyData : ScriptableObject // holds data we can change
     public float damage;
     public float enemySpeed;
     public float attackSpeed;
+    public float attackRange;
     public float attackHomeRadius;
-    public float attackPlayerRadius;
+    public float chasePlayersRadius;
 
 }

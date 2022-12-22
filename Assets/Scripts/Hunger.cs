@@ -33,7 +33,6 @@ public class Hunger : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        hungerDisplay.text = hungerStat.ToString();
 
         if (player.isMoving && canDrainHunger)
         {

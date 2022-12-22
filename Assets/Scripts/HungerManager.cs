@@ -2,20 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public class HungerManager : MonoBehaviour
 {
     #region Singleton
-    public static PlayerManager instance;
+    public static HungerManager instance;
 
     void Awake()
     {
         instance = this;
-        player = this.gameObject;
     }
 
     #endregion
 
-    public GameObject player;
-
+    public Hunger hunger;
     
 }
