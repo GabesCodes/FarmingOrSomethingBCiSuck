@@ -14,15 +14,17 @@ public class Health : MonoBehaviour
     void Start()
     {      
 
-        if (this.gameObject.CompareTag("Player"))
+        if (gameObject.CompareTag("Player"))
         {
-            this.health = GetComponent<PlayerScript>().playerHP;
+            health = GetComponent<PlayerScript>().playerHP;
         }
 
-        if (this.gameObject.GetComponent<Enemy>())
-        {
-            this.health = GetComponent<Enemy>().enemyHP;
+        if (gameObject.GetComponent<Enemy>())
+        {         
+            health = GetComponent<Enemy>().enemyHP;
         }
+
+        health = 10f;
     }
     public void SetEnemyHealth(float enemyHealth)
     {

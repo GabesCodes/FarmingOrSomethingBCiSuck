@@ -11,6 +11,10 @@ public class EnemyGoalManager : MonoBehaviour
     {
         instance = this;
     }
+    private void Start()
+    {
+       this.GetComponent<Health>().health = 1000;
+    }
 
     #endregion
 

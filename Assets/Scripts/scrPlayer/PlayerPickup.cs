@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerPickup : MonoBehaviour
 {
@@ -13,7 +14,6 @@ public class PlayerPickup : MonoBehaviour
 
     public GameObject player;
     public GameObject CurrentItemCarried;
-    private Rigidbody rb;
 
     public Transform itemHolder;
 
@@ -21,32 +21,35 @@ public class PlayerPickup : MonoBehaviour
     public LayerMask canPlaceLayer;
 
     private FoodHandler foodHandler;
+    private WeaponManager weaponManager;
+
     private PlayerScript playerScript;
     private Hunger hunger;
+
+    public TextMeshProUGUI weapon;
+
 
 
     // Start is called before the first frame update
     void Start()
     {
         FoodHandler foodhandler = GetComponent<FoodHandler>();
+        WeaponManager weaponManager = GetComponent<WeaponManager>();
         PlayerScript player = GetComponent<PlayerScript>();
         Rigidbody rb = GetComponent<Rigidbody>();
         Hunger hunger = GetComponent<Hunger>();
-
-        isCarryingItem = false;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.DrawRay(transform.position, transform.forward, Color.red);
-
-        if (Input.GetMouseButtonDown(0) && !isCarryingItem)
+        if (Input.GetMouseButtonDown(0) && !isCarryingItem && !WeaponManager.instance.isUsingWeapon)
         {
             pickupItem();
         }
 
-        if(Input.GetMouseButtonDown(1) && isCarryingItem)
+        if(Input.GetMouseButtonDown(1) && isCarryingItem )
         {
             placeItem();
         }
@@ -60,6 +63,7 @@ public class PlayerPickup : MonoBehaviour
     private void eatItem()
     {
         player.GetComponent<Hunger>().hungerStat += ItemCarriedValue;
+        player.GetComponent<Health>().health += ItemCarriedValue;
         Destroy(CurrentItemCarried);
         isCarryingItem = false;
     }

@@ -7,7 +7,7 @@ public class Spawner : MonoBehaviour
     [SerializeField]
     private GameObject enemyPrefab;
 
-
+    [SerializeField]
     private float nextSpawnTime;
 
     [SerializeField]

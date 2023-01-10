@@ -3,61 +3,81 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class Gun : MonoBehaviour //general class for a hitscan gun.
+public class HitscanGun : MonoBehaviour //general class for a hitscan gun.
 {
     [SerializeField]
     public bool canShoot;
     public bool canReload;
-    public bool reloading;
+    public bool isReloading;
     public int currentAmmoInClip;
     public int ammoInReserve;
+
+    public CameraShake cameraShake;
+
+    public TextMeshProUGUI playerAmmoText;
+    private char slash = '/';
 
     [SerializeField]
     private GunData data;
 
     [SerializeField] 
-    private LayerMask enemy;
+    private LayerMask damagableLayer;
 
     public Vector3 defaultPosition;
     public Vector3 aimingPosition;
 
-    public float aimSmoothing;
+
+    Animator animator;
+
+    int isReloadingHash;
+    int isShootingHash;
+
+    public bool isShooting;
 
 
-
-
-
-    //public GameObject impactEffect;
-
-    // Start is called before the first frame update
     void Start()
     {
-
         currentAmmoInClip = data.clipSize;
         ammoInReserve = data.reservedAmmoCapacity;
+
+        animator = GetComponent<Animator>();
+        isReloadingHash = Animator.StringToHash("isReloadingAnim");
+        isShootingHash = Animator.StringToHash("isShootingAnim");
+
+        animator.SetBool(isShootingHash, false);
+        animator.SetBool(isReloadingHash, false);
 
         canShoot = true;
 
     }
 
-    // Update is called once per frame
     private void Update()
     {
+        playerAmmoText.text = "Ammo: " + currentAmmoInClip.ToString() + slash + ammoInReserve.ToString();
 
-        //initiate shoot 
-        if (Input.GetMouseButton(0) && canShoot && !reloading && currentAmmoInClip > 0)
+        if (Input.GetMouseButton(0) && !isShooting && !isReloading && currentAmmoInClip > 0)
         {
-            canReload = true;
-            canShoot = false;
-            currentAmmoInClip--;
             StartCoroutine(ShootHitscanGun());
+           
         }
 
-        //reload code
-        if (Input.GetKeyDown(KeyCode.R) && canReload && !reloading &&  currentAmmoInClip  < data.clipSize && ammoInReserve > 0)
-        {
-            StartCoroutine(ReloadGunIE());
 
+        //reload code 
+        if (Input.GetKeyDown(KeyCode.R) && canReload && !isShooting && !isReloading && currentAmmoInClip <= data.clipSize && ammoInReserve >= 0)
+        { 
+           
+            StartCoroutine(ReloadGunIE());
+           
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            animator.Play("shooting");
+
+        }
+        if (isReloading)
+        {
+            playerAmmoText.text = "RELOADING!";
         }
     }
 
@@ -66,32 +86,41 @@ public class Gun : MonoBehaviour //general class for a hitscan gun.
         RaycastHit hit;
 
         //shoot a raycast, if we hit something return true, if true, get whatever object it hit and store info to target var, if it has health, dmg it 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, data.range))
+        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, data.range, damagableLayer))
         {
             Health target = hit.transform.GetComponent<Health>();
             if (target != null) //  only do this if component is found, target is not null (nothing)
             {
                 Debug.Log("gun hit!");
                 target.TakeDamage(damage: data.damage);
-            }
-            
+            } 
         }
     }
     IEnumerator ShootHitscanGun()
     {
+        isShooting = true;
+        canShoot = false;
+        canReload = false;
+        currentAmmoInClip--;
         Hitscan();
+        animator.SetBool(isShootingHash, true);
         yield return new WaitForSeconds(data.fireRate);
+        animator.SetBool(isShootingHash, false);
+
+        isShooting = false;
         canShoot = true;
+        canReload = true;
+
     }
 
     IEnumerator ReloadGunIE()
     {
-        ReloadGun();
-        canReload = false;
-        reloading = true;
+        isReloading = true;
         canShoot = false;
-        yield return new WaitForSeconds(1.20f);
-        reloading = false;
+        ReloadGun();
+        animator.Play("reloading");
+        yield return new WaitForSeconds(data.reloadTime);
+        isReloading = false;
         canShoot = true;
     }
 
@@ -110,6 +139,7 @@ public class Gun : MonoBehaviour //general class for a hitscan gun.
                 currentAmmoInClip = data.clipSize;
                 ammoInReserve -= amountNeeded; //math is hard
             }
+
         }
     }
 }

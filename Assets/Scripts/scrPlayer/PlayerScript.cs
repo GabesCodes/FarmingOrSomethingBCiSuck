@@ -9,7 +9,7 @@ public class PlayerScript : MonoBehaviour
 {   
     [SerializeField]
     public float currentSpeed;
-    public float walkSpeed = 7.5f;
+    public float walkSpeed;
     public float sprintModifier = 2.5f;
 
     [SerializeField]
@@ -30,14 +30,17 @@ public class PlayerScript : MonoBehaviour
     public TextMeshProUGUI playerHealthText;
     public TextMeshProUGUI playerHungerText;
 
+
     public GameObject player;
     Vector3 lastPos;
 
     private CharacterController ch;
+    EnemyShooterAI shooterAI;
 
     // Start is called before the first frame update
     void Start()
     {
+        shooterAI = GetComponent<EnemyShooterAI>();
         playerHP = 100f;
         player = this.gameObject;
         ch = gameObject.GetComponent<CharacterController>();
@@ -63,6 +66,10 @@ public class PlayerScript : MonoBehaviour
         {
             isMoving = false;
         }
+
+     
+
+
 
         lastPos = player.transform.position;
 
@@ -99,7 +106,7 @@ public class PlayerScript : MonoBehaviour
 
         void Sprint()
         {
-            currentSpeed = walkSpeed + sprintModifier;
+            currentSpeed = walkSpeed * sprintModifier;
             //Debug.Log("running!");
         }
    

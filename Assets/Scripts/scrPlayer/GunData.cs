@@ -12,6 +12,7 @@ public class GunData : ScriptableObject // holds data we can change
     public float damage;
     public float range;
     public float fireRate;
+    public float reloadTime;
     public int clipSize;
     public int reservedAmmoCapacity;
     

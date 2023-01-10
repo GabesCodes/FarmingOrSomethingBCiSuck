@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class WeaponManager : MonoBehaviour
+public class WeaponSwitcher : MonoBehaviour
 {
     public TextMeshProUGUI currentWeaponText;
 
-
     public int currentWeapon;
+    public bool isUsingWeapon;
     public Transform[] weapons;
     string weaponName;
 
@@ -16,7 +16,8 @@ public class WeaponManager : MonoBehaviour
     void Start()
     {
         changeWeapon(0);
-        currentWeaponText.text = "Melee";
+        currentWeaponText.text = "Hand";
+        isUsingWeapon = false;
     }
 
     // Update is called once per frame
@@ -25,19 +26,39 @@ public class WeaponManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            weaponName = "Melee";
+            weaponName = "Hand";
+            isUsingWeapon = false;
             changeWeapon(0);
         }
+
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            weaponName = "Gun";
+            weaponName = "Melee";
+            isUsingWeapon = true;
+
             changeWeapon(1);
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            weaponName = "Shield";
+            weaponName = "Assault";
+            isUsingWeapon = true;
+
             changeWeapon(2);
+        }  
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            weaponName = "Pistol";
+            isUsingWeapon = true;
+            changeWeapon(3);
         }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            weaponName = "Shield";
+            isUsingWeapon = true;
+            changeWeapon(4);
+        }
+     
+
         if (Input.GetKeyDown(KeyCode.Q))
         {
            // changeWeapon(currentWeapon);

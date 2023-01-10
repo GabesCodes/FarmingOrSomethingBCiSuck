@@ -9,6 +9,9 @@ public class MeleeAttack : MonoBehaviour
     [SerializeField]
     private MeleeData data;
 
+    [SerializeField]
+    private LayerMask damagableLayer;
+
     public bool isSwinging;
 
     // Start is called before the first frame update
@@ -20,7 +23,6 @@ public class MeleeAttack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.DrawRay(transform.position, transform.forward, Color.red);
         if (Input.GetMouseButtonDown(0) && !isSwinging)
         {
             isSwinging = true;
@@ -35,16 +37,13 @@ public class MeleeAttack : MonoBehaviour
     private void TryMeleeAttack()
     {
         RaycastHit hit;
-        if (Physics.Raycast(meleeAttackObject.transform.position, meleeAttackObject.transform.forward, out hit, data.swingRange))
+        if (Physics.Raycast(Camera.main.transform.position,Camera.main.transform.forward, out hit, data.swingRange, damagableLayer))
         {
-            if (hit.collider.gameObject != null)
+            Health target = hit.collider.GetComponent<Health>();
+            if (target != null)
             {
-                Health target = hit.transform.GetComponent<Health>();
-                if (target != null) //  only do this if component is found, target is not null (nothing)
-                {
                     Debug.Log("melee hit!");
-                    target.TakeDamage(damage: data.damage);
-                }
+                    target.TakeDamage(damage: data.damage);   
             }
         }
     }
